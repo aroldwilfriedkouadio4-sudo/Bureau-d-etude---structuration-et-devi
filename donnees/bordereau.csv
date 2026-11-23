@@ -1,0 +1,19 @@
+code,designation,unite,prix_unitaire_fcfa
+BET_DAL,Béton C25/30 pour dalles,m3,110000
+BET_POT,Béton C25/30 pour poteaux,m3,120000
+BET_SEM,Béton C25/30 pour semelles,m3,100000
+ACIER,Acier HA façonné et posé,kg,900
+GO-BETON,Beton C25/30,m3,60000
+GO-ACIER-P, LA BOTTE D'Acier HA12 FE500 poteaux,kg,45000
+GO-ACIER-S, LA BOTTE D'Acier HA14 FE500 semelles,kg,45000
+GO-ACIER-D, LA BOTTE D'Acier HA MIXITE FE500 dalles,kg,45000
+GO-Dalle,Dalle pleine ep. 0.20,m2,12000
+GO-POTEAU,Poteau beton 25x25cm,ml,15000
+GO-SEMELLE-A,Semelle isolee angle,U,25000
+GO-SEMELLE-R,Semelle isolee rive,U,35000
+GO-SEMELLE-C,Semelle isolee centrale,U,50000
+SO-MACONNERIE,Mur en agglos creux de 15cm,m2,8500
+SO-ENDUIT,Enduit interieur et exterieur,m2,3500
+SO-PEINTURE,Peinture acrylique deux couches,m2,2500
+SO-CARRELAGE,Carrelage gres cerame,m2,9000
+SO-ETANCHEITE,Etancheite bicouche toiture(passalu),m2,12000

@@ -1,0 +1,3 @@
+# Le programme n'utilise que la bibliothèque standard de Python (3.8+).
+# pytest est optionnel : les tests tournent aussi avec « python -m unittest ».
+pytest>=7.0
