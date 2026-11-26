@@ -1,3 +1,5 @@
+"""Menu console du bureau d'études — Projet 1."""
+
 from pathlib import Path
 
 import charges
@@ -16,12 +18,12 @@ MENU = """
 3. Descente de charges
 4. Prédimensionner poteaux et semelles
 5. Générer le devis
-6. Exporter un rapport
+6. Exporter un rapport (Texte + Excel)
 0. Quitter"""
 
 
 def demander(message, defaut, convertir=float):
-                                                                                  
+    """Demande une valeur ; Entrée garde la valeur par défaut. Redemande si invalide."""
     while True:
         rep = input(f"{message} [{defaut}] : ").strip()
         if not rep:
@@ -103,7 +105,11 @@ def main():
 
             if choix == "2":
                 for ouvrage, v in m.items():
-                    print(f"{ouvrage:<10} béton {v['beton_m3']:7.2f} m³   acier {v['acier_kg']:8.1f} kg")
+                    if "beton_m3" in v:
+                        print(f"{ouvrage:<10} béton {v['beton_m3']:7.2f} m³   acier {v['acier_kg']:8.1f} kg")
+                    else:
+                        for nom_so, surf in v.items():
+                            print(f"{nom_so:<15} surface {surf:7.2f} m²")
             elif choix == "3":
                 afficher_descente(descente)
             elif choix == "4":
@@ -117,7 +123,12 @@ def main():
                 else:
                     texte = devis.texte_rapport(projet, descente, predim, m, lignes, total)
                     chemin = devis.exporter_rapport(texte, SORTIES / "rapport.txt")
-                    print(f"Rapport exporté : {chemin}")
+                    print(f"Rapport texte exporté : {chemin}")
+
+                    chemin_xlsx = devis.exporter_excel(
+                        projet, descente, predim, lignes, total, SORTIES / "dossier_genie_civil.xlsx"
+                    )
+                    print(f"Fichier Excel généré : {chemin_xlsx}")
         except (DonneesInvalides, ValueError, KeyError, FileNotFoundError) as err:
             print(f"Erreur : {err}")
 

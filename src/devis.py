@@ -3,6 +3,7 @@
 import csv
 from pathlib import Path
 
+import openpyxl
 from charges import g_plancher
 
 
@@ -74,7 +75,6 @@ def charger_bordereau(chemin):
 
 def generer_devis(m, bordereau):
     """Construit les lignes du devis et le total (FCFA)."""
-    # Calcul du total acier uniquement sur les ouvrages béton (évite erreur sur second_oeuvre)
     total_acier = sum(
         v["acier_kg"] for v in m.values() if isinstance(v, dict) and "acier_kg" in v
     )
@@ -84,7 +84,6 @@ def generer_devis(m, bordereau):
         "BET_POT": m["poteaux"]["beton_m3"],
         "BET_SEM": m["semelles"]["beton_m3"],
         "ACIER": total_acier,
-        # Nouveaux composants ajoutés depuis votre bordereau.csv :
         "SO-MACONNERIE": m["second_oeuvre"]["SO-MACONNERIE"],
         "SO-ENDUIT": m["second_oeuvre"]["SO-ENDUIT"],
         "SO-PEINTURE": m["second_oeuvre"]["SO-PEINTURE"],
@@ -159,4 +158,46 @@ def exporter_rapport(texte, chemin):
     chemin = Path(chemin)
     chemin.parent.mkdir(parents=True, exist_ok=True)
     chemin.write_text(texte, encoding="utf-8")
+    return chemin
+
+
+def exporter_excel(projet, descente, predim, lignes, total, chemin="sorties/dossier_genie_civil.xlsx"):
+    """Génère un classeur Excel structuré (Descente de charges + Devis en FCFA)."""
+    chemin = Path(chemin)
+    chemin.parent.mkdir(parents=True, exist_ok=True)
+
+    wb = openpyxl.Workbook()
+
+    # Onglet 1 : Descente de charges & Prédimensionnement
+    ws1 = wb.active
+    ws1.title = "Structure"
+    ws1.append(["PROJET :", projet.nom, "VILLE :", projet.ville])
+    ws1.append([])
+    ws1.append(["Type Poteau", "Nombre", "Surface (m²)", "N_ELU (kN)", "Poteau retenu (cm)", "G+Q (kN)", "Semelle retenue (m)"])
+    for t, r in predim.items():
+        ws1.append([
+            t.capitalize(),
+            r["nombre"],
+            descente[t]["surface"],
+            round(r["N_ELU"], 1),
+            round(r["cote_poteau"] * 100, 0),
+            round(r["G_plus_Q"], 1),
+            round(r["B_semelle"], 2),
+        ])
+
+    # Onglet 2 : Devis Estimatif (DQE)
+    ws2 = wb.create_sheet(title="Devis_FCFA")
+    ws2.append(["Code", "Désignation", "Unité", "Quantité", "Prix Unitaire (FCFA)", "Montant Total (FCFA)"])
+    for l in lignes:
+        ws2.append([
+            l["code"],
+            l["designation"],
+            l["unite"],
+            round(l["quantite"], 2),
+            l["prix"],
+            round(l["montant"], 0),
+        ])
+    ws2.append(["", "", "", "", "TOTAL GÉNÉRAL HT", round(total, 0)])
+
+    wb.save(chemin)
     return chemin
